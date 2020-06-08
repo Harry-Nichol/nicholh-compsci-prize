@@ -1,6 +1,11 @@
 namespace SpriteKind {
     export const rugbyPosts = SpriteKind.create()
+    export const opposition = SpriteKind.create()
 }
+sprites.onOverlap(SpriteKind.Player, SpriteKind.opposition, function (sprite, otherSprite) {
+    oppo.destroy()
+    info.changeLifeBy(-1)
+})
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     rugbyBall = sprites.createProjectileFromSprite(img`
 . . . . . . . . . . . . . . . . 
@@ -21,10 +26,16 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
 . . . . . . . . . . . . . . . . 
 `, rubberDuck, 200, 0)
 })
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.opposition, function (sprite, otherSprite) {
+    oppo.destroy()
+    oppo.destroy(effects.spray, 100)
+    info.changeScoreBy(1)
+})
 sprites.onOverlap(SpriteKind.Projectile, SpriteKind.rugbyPosts, function (sprite, otherSprite) {
-    game.over(true)
+    info.changeScoreBy(5)
 })
 let rugbyBall: Sprite = null
+let oppo: Sprite = null
 let rubberDuck: Sprite = null
 scene.setBackgroundColor(7)
 scene.setBackgroundImage(img`
@@ -167,7 +178,7 @@ c b b d 5 d c d 5 5 5 5 5 5 b .
 b b c c c d d d d 5 5 5 b b . . 
 . . . c c c c c c c c b b . . . 
 `, SpriteKind.Player)
-info.setLife(3)
+info.setLife(1)
 controller.moveSprite(rubberDuck, 200, 200)
 let rugbyPosts = sprites.create(img`
 . . . . . . . . . . . . . . . . 
@@ -188,3 +199,33 @@ let rugbyPosts = sprites.create(img`
 . . . f f f . . . . . . f f f . 
 `, SpriteKind.rugbyPosts)
 rugbyPosts.setPosition(145, 58)
+game.onUpdateInterval(500, function () {
+    oppo = sprites.create(img`
+. . . . . . . . . . . . . . f f f f f f . . . . 
+. . . . . . . . . . . . . f 2 f e e e e f f . . 
+. . . . . . . . . . . . f 2 2 2 f e e e e f f . 
+. . . . . . . . . . . . f e e e e f f e e e f . 
+. . . . . . . . . . . f e 2 2 2 2 e e f f f f . 
+. . . . . . . . . . . f 2 e f f f f 2 2 2 e f . 
+. . . . . . . . . . . f f f e e e f f f f f f f 
+. . . . . . . . . . . f e e 4 4 f b e 4 4 e f f 
+. . . . . . . . . . . . f e d d f 1 4 d 4 e e f 
+. . . . . . . . . . . . . f d d d d 4 e e e f . 
+. . . . . . . . . . . . . f e 4 4 4 e d d f . . 
+. . . . . . . . . . . . . c c c 2 2 e d d f . . 
+. . . . . . . . . . . . . c d c 2 2 f e e . . . 
+. . . . . . . . . . . . c d d c 4 4 4 4 f . . . 
+. . . . . . . . . . . c d d c f f f f f . . . . 
+. . . . . . . . . . c d d c . . f f f . . . . . 
+. . . . . . . . . . c d c . . . . . . . . . . . 
+. . . . . . . . . . c c . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . 
+`, SpriteKind.opposition)
+    oppo.setVelocity(-100, 0)
+    oppo.setPosition(180, Math.randomRange(0, 120))
+})
